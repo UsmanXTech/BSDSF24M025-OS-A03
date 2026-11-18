@@ -27,6 +27,12 @@ int handle_builtin(char** arglist) {
     if (strcmp(arglist[0], "cd") == 0) {
         const char* dir = arglist[1];
 
+        /* Extra arguments are a user error, not silently ignored. */
+        if (arglist[1] != NULL && arglist[2] != NULL) {
+            fprintf(stderr, "cd: too many arguments\n");
+            return 1;
+        }
+
         /* Bare "cd" goes to the user's home directory (bash behaviour). */
         if (dir == NULL) {
             dir = getenv("HOME");
