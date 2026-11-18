@@ -484,6 +484,41 @@ chains correctly, but prints the quotes literally (`"First command"`).
 
 ---
 
-## Feature 9 — Git Workflow with a Secondary Account
+## Feature 9 — Git Workflow with a Secondary Account (Release 9, tag `v9`, 10 marks)
 
-_Pending — needs the student's secondary GitHub account; cannot be done by Muse._
+**What was implemented**
+
+- The secondary GitHub account is Samiq-56 (bsdsf24m056@pucit.edu.pk) —
+  the classmate who did the F9 work as the contributor, while this repo
+  (UsmanXTech/BSDSF24M025-OS-A03) is the primary. The secondary account
+  forked the primary repo, created the mock-bug issue, fixed it on a
+  branch, and opened the pull request; the primary (UsmanXTech) reviewed
+  and merged it.
+- Mock bug (verified before the fix): `cd` silently ignored extra
+  arguments — `cd /tmp extra` moved to /tmp with no error. The issue
+  ([Issue #1](https://github.com/UsmanXTech/BSDSF24M025-OS-A03/issues/1),
+  "Bug: `cd` extra arguments ignore kar deta hai") records the expected
+  bash behaviour: print `cd: too many arguments` and do not change
+  directory.
+- Fix (branch `fix-cd-extra-args`, commit `0648e21`, PR
+  [#2](https://github.com/UsmanXTech/BSDSF24M025-OS-A03/pull/2), 1 file,
+  +6 lines in `src/builtin.c`): inside the `cd` block, right after
+  `const char* dir = arglist[1];`, the check `if (arglist[1] != NULL &&
+  arglist[2] != NULL) { fprintf(stderr, "cd: too many arguments\n");
+  return 1; }`. The `arglist[1]` guard is needed because for a bare `cd`
+  the slot after the NULL terminator is not guaranteed to be NULL.
+- Workflow (PDF Tasks 1–5): fork from the secondary account; issue on
+  the primary repo; clone the fork elsewhere, branch, fix, commit, push,
+  open PR to primary; primary reviews and merges (`3dd5551`, "Merge pull
+  request #2 from Samiq-56/fix-cd-extra-args", 2026-11-18 10:34 PKT);
+  issue #1 auto-closed by "Fixes #1"; `git pull` on main; all feature
+  branches pushed to origin (`git push origin --all` — all 7 feature
+  branches plus main are on the remote).
+- Tested: `cd /tmp extra` prints the error and the directory is unchanged
+  (verified live in the built binary); `cd /tmp`, bare `cd` and
+  `cd /nonexistent` behave as before (PR author's tests); the fix touches
+  only the `cd` block in `src/builtin.c`. `make clean && make`: no errors,
+  no warnings.
+- Release: tag `v9` (annotated), merged to main (`3dd5551`),
+  [Release 9](https://github.com/UsmanXTech/BSDSF24M025-OS-A03/releases/tag/v9)
+  with compiled `bin/myshell` asset (27,120 bytes).
